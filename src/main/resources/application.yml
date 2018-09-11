@@ -1,0 +1,47 @@
+info:
+  component: Weatherbit.io Client and API
+
+spring:
+  application:
+    name: weatherbit-io-api
+  profiles:
+    include:
+      - weatherbit
+  datasource:
+    # To access in memory DB for debug purpose, change "mem" to "file" in local machine.
+    url: jdbc:h2:mem:~/sample;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sample
+    password: sample
+    driver-class-name: org.h2.Driver
+    data: sql/data.sql
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: none
+    database: H2
+
+liquibase:
+  drop-first: false
+  url: ${spring.datasource.url}
+  user: ${spring.datasource.username}
+  password: ${spring.datasource.password}
+
+server:
+  port: ${port:8080}
+
+logging:
+  file: ${spring.application.name}.log
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %level [AppName=${spring.application.name}] [trace=%X{X-B3-TraceId:-}, span=%X{X-B3-SpanId:-}] [LogMessage=%m]%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %level [AppName=${spring.application.name}] [trace=%X{X-B3-TraceId:-}, span=%X{X-B3-SpanId:-}] [LogMessage=%m]%n"
+  level:
+    root: INFO
+
+root:
+  config:
+    title: Weatherbit.io Client and REST API
+    description: Spring Boot REST API and client for Weatherbit.io
+    version: 1.0.0
+    contactName: Christian Leon
+    contactUrl: https://www.linkedin.com/in/christianrleon
+    contactEmail: crleon09@gmail.com
