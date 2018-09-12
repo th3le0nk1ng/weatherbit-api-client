@@ -5,15 +5,17 @@
 
 ## Prerequisites
 - JDK 1.8+
-- Gradle 3+
+- Gradle 4.8
 
 ## Stack
 - Spring Boot
 - Swagger
 
 #### How to Run?
+The `gradlew` executable can be used to build the project without needing to install Gradle.
+
 ```
-gradle clean build
+gradle clean build OR ./gradlew clean build
 
 java -jar builds/libs/weatherbit-io-1.0.0.jar
 ```
