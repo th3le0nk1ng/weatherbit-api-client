@@ -1,6 +1,8 @@
 package com.crleon.weatherbit.api.service;
 
-import com.crleon.weatherbit.api.exception.PostalCodeNotFoundException;
+import com.crleon.weatherbit.api.comparator.WeatherLocalDateTimeComparator;
+import com.crleon.weatherbit.api.comparator.WeatherTemperatureComparator;
+import com.crleon.weatherbit.api.exception.InvalidPostalCodeException;
 import com.crleon.weatherbit.client.WeatherBitClient;
 import com.crleon.weatherbit.client.domain.Forecast;
 import com.crleon.weatherbit.client.domain.Weather;
@@ -26,21 +28,26 @@ public class WeatherBitService implements ForecastService {
     @Override
     public Forecast getNextDayHourlyForecastForPostalCode(String postalCode) {
         if (postalCode == null) {
-            throw new PostalCodeNotFoundException("Postal code was not provided");
+            throw new InvalidPostalCodeException("Postal code was not provided");
         }
 
         // Query for forecast of next 48 hours to handle timezone offset for "next day" of postal code
         Forecast forecast = weatherBitClient.getHourlyForecast(48, postalCode);
 
         if (forecast == null) {
-            throw new PostalCodeNotFoundException(("Postal code is invalid"));
+            throw new InvalidPostalCodeException(("Postal code is invalid"));
         }
 
         LocalDateTime localDateTime = LocalDateTime.now(ZoneId.of(forecast.getTimezone()));
-        int hourOffsetFromMidnight = 23 - localDateTime.getHour();
 
-        List<Weather> weatherList = forecast.getWeatherList().stream().skip(hourOffsetFromMidnight).limit(24).collect(Collectors.toList());
+        List<Weather> weatherList = forecast.getWeatherList().stream()
+                .filter(weather -> weather.getLocalDateTime().toLocalDate().isAfter(localDateTime.toLocalDate()))
+                .limit(24).sorted(new WeatherLocalDateTimeComparator()).collect(Collectors.toList());
         forecast.setWeatherList(weatherList);
+
+        LocalDateTime coolestHourOfDay = forecast.getWeatherList().stream().min(new WeatherTemperatureComparator())
+                .get().getLocalDateTime();
+        forecast.setCoolestHourOfDay(coolestHourOfDay);
 
         return forecast;
     }

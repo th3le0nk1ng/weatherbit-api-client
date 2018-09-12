@@ -3,12 +3,14 @@ package com.crleon.weatherbit.client.domain;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class Forecast {
     private String countryCode;
     private String stateCode;
     private String timezone;
+    private LocalDateTime coolestHourOfDay;
     private List<Weather> weatherList;
 
     @JsonCreator
@@ -42,6 +44,14 @@ public class Forecast {
 
     public void setTimezone(String timezone) {
         this.timezone = timezone;
+    }
+
+    public LocalDateTime getCoolestHourOfDay() {
+        return coolestHourOfDay;
+    }
+
+    public void setCoolestHourOfDay(LocalDateTime coolestHourOfDay) {
+        this.coolestHourOfDay = coolestHourOfDay;
     }
 
     public List<Weather> getWeatherList() {
