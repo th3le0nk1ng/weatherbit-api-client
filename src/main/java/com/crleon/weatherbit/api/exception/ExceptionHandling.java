@@ -20,8 +20,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
-import javax.servlet.http.HttpServletRequest;
-
 @ControllerAdvice
 public class ExceptionHandling {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionHandling.class);
@@ -65,12 +63,16 @@ public class ExceptionHandling {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = { InvalidPostalCodeException.class })
     @ResponseBody
-    public void handleInvalidPostalCodeException(Exception ex) {
+    public OperationError handleInvalidPostalCodeException(Exception ex) {
         /*
          * This method doesn't return any response body, exception or error can
          * be identified by HTTP status code returned.
          */
         LOGGER.error("Postal code is invalid", ex);
+
+        OperationError operationError = new OperationError();
+        operationError.setErrorMessage("Postal code is invalid.");
+        return operationError;
     }
 
     /**
@@ -94,8 +96,9 @@ public class ExceptionHandling {
      * @param ex exception to be handled
      */
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(value = { MissingPathVariableException.class, ConversionNotSupportedException.class,
+    @ExceptionHandler(value = { Exception.class, MissingPathVariableException.class, ConversionNotSupportedException.class,
             HttpMessageNotWritableException.class})
+    @ResponseBody
     public void handleInternalServerErrorException(Exception ex) {
         /*
          * This method doesn't return any response body, exception or error can
@@ -111,12 +114,17 @@ public class ExceptionHandling {
      */
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(value = { NoHandlerFoundException.class})
-    public void handleNotFoundException(Exception ex) {
+    @ResponseBody
+    public OperationError handleNotFoundException(Exception ex) {
         /*
          * This method doesn't return any response body, exception or error can
          * be identified by HTTP status code returned.
          */
-        LOGGER.error("Handler exception occurred ", ex);
+        LOGGER.error("Resource not found exception occurred ", ex);
+
+        OperationError operationError = new OperationError();
+        operationError.setErrorMessage("Resource not found.");
+        return operationError;
     }
 
     /**
@@ -133,23 +141,4 @@ public class ExceptionHandling {
          */
         LOGGER.error("Media type not acceptable exception occurred ", ex);
     }
-
-/*    *//**
-     * Handles a global exception
-     *
-     * @param request original request received
-     * @param ex      exception to be handled
-     * @return error response body.
-     *//*
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(value = Exception.class)
-    @ResponseBody
-    public OperationError handleGlobalException(final HttpServletRequest request, final Exception ex) {
-        *//*
-         * For unhandled exceptions, log message would contain the String criticalError so that notifications/alerts can be
-         * sent by parsing the String criticalError. Example log message would look like the below message.
-         * LogMessage=Unhandled exception occurred, is criticalError and exception class java.lang.NullPointerException
-         *//*
-        LOGGER.error("Unhandled exception occurred, is {} and exception {} ", CRITICAL_ERROR, ex.getClass(), ex);
-    }*/
 }

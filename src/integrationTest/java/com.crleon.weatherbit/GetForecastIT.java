@@ -3,8 +3,8 @@ package com.crleon.weatherbit;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.isEmptyOrNullString;
 
+import com.crleon.weatherbit.api.service.ForecastService;
 import com.crleon.weatherbit.client.domain.Forecast;
 import com.crleon.weatherbit.constant.IntegrationTestConstants;
 import io.restassured.RestAssured;
@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -24,6 +25,9 @@ public class GetForecastIT {
 
     @LocalServerPort
     private int port;
+
+    @SpyBean
+    ForecastService forecastService;
 
     @Before
     public void setup() {
@@ -46,6 +50,12 @@ public class GetForecastIT {
     @Test
     public void getForecastByZipCode_invalidZipCode_400() {
         RestAssured.given().contentType(ContentType.JSON).get("?postalCode=85jaosidfjaos006").then().statusCode(400)
-                .contentType(isEmptyOrNullString());
+                .body("errorMessage", is(equalTo("Postal code is invalid.")));
+    }
+
+    @Test
+    public void getForecastByZipCode_notFound_404() {
+        RestAssured.given().contentType(ContentType.JSON).get("/foo?postalCode=85006").then().statusCode(404)
+                .body("error", is(equalTo("Not Found")));
     }
 }

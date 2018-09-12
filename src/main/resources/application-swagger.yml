@@ -1,0 +1,7 @@
+swagger:
+  title: Weatherbit.io Client and REST API
+  description: Spring Boot REST API and client for Weatherbit.io
+  version: 1.0.0
+  contactName: Christian Leon
+  contactUrl: https://www.linkedin.com/in/christianrleon
+  contactEmail: crleon09@gmail.com

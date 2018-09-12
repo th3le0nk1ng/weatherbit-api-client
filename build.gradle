@@ -79,6 +79,27 @@ configurations {
     integrationTestRuntime.extendsFrom testRuntime
 }
 
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "${artifactory_contextUrl}${artifactory_publish_repo_prefix}-${version.endsWith('-SNAPSHOT') ? 'snapshot' : 'release'}"
+            credentials {
+                username = "${artifactory_user}"
+                password = "${artifactory_password}"
+            }
+        }
+    }
+}
+
+springBoot {
+    buildInfo()
+}
+
 clean {
     delete sourceSets.generated.java.srcDirs
 }

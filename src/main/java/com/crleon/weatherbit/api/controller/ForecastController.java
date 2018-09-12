@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(value = "forecast", description = "Operations pertaining to weather forecasts")
 public class ForecastController {
 
-    private static final String DATE_FORMATTER_ISO_LOCAL_DATE_TIME = "yyyy-MM-dd'T'HH:mm:ss";
     private ForecastService forecastService;
 
     @Autowired
@@ -39,9 +38,7 @@ public class ForecastController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public Forecast getForecast(
-            @ApiParam(value = "Postal code", required = true) @RequestParam(name = "postalCode") String postalCode,
-            @RequestParam(name = "hours", defaultValue = "48") int hours,
-            @RequestParam(name = "nextDay", defaultValue = "true") boolean nextDay) {
+            @ApiParam(value = "Postal code", required = true) @RequestParam(name = "postalCode") String postalCode) {
         return forecastService.getNextDayHourlyForecastForPostalCode(postalCode);
     }
 }
