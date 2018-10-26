@@ -1,7 +1,8 @@
-# Spring Boot Weather Forecast REST API and Client
+# Spring Boot Weather Forecast REST API and Client leveraging Weatherbit.io API
 
-### This application is a sample project of REST API and client that can return the following
+### This application is a sample project of a REST API and client that can return the following
 * Full 24 hour forecast for the next day based on postal code
+* Coolest temperature and time of day for the next day forecast
 
 ## Prerequisites
 - JDK 1.8+
